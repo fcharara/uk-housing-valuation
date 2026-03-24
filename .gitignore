@@ -1,0 +1,27 @@
+# Data files (too large for GitHub)
+data/raw/
+data/processed/
+data/merged/
+
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Logs
+pipeline.log
+*.log
+
+# Mac system files
+.DS_Store
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
