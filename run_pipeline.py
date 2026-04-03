@@ -42,18 +42,22 @@ def run_ingestion(overwrite: bool = False):
     from ingestion.postcode_lookup import run as run_pcd
     from ingestion.macro_indicators import run as run_macro
     from ingestion.demographics    import run as run_demo
+    from ingestion.epc_data import run as run_epc
 
-    log.info("── Step 1/4: Land Registry Price Paid ──")
+    log.info("── Step 1/5: Land Registry Price Paid ──")
     run_lr(overwrite=overwrite)
 
-    log.info("── Step 2/4: Postcode → Region Lookup ──")
+    log.info("── Step 2/5: Postcode → Region Lookup ──")
     run_pcd(overwrite=overwrite)
 
-    log.info("── Step 3/4: Macroeconomic Indicators ──")
+    log.info("── Step 3/5: Macroeconomic Indicators ──")
     run_macro(overwrite=overwrite)
 
-    log.info("── Step 4/4: Demographic Data ──")
+    log.info("── Step 4/5: Demographic Data ──")
     run_demo(overwrite=overwrite)
+
+    log.info("── Step 5/5: EPC Data ──")
+    run_epc(overwrite=overwrite)
 
     log.info("STAGE 1 COMPLETE")
 

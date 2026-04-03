@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head><title>UK Housing Valuation</title></head>
+<body>
+<h1>UK Housing Price Predictor</h1>
+<form action="/predict" method="post">
+    <label>Property Type:</label>
+    <select name="property_type">
+        <option value="D">Detached</option>
+        <option value="S">Semi-Detached</option>
+        <option value="T">Terraced</option>
+        <option value="F">Flat</option>
+    </select><br><br>
+    <label>Floor Area (sqm):</label>
+    <input type="number" name="floor_area" value="80"><br><br>
+    <label>Number of Rooms:</label>
+    <input type="number" name="num_rooms" value="3"><br><br>
+    <label>Energy Rating:</label>
+    <select name="energy_rating">
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="B">B</option>
+        <option value="E">E</option>
+    </select><br><br>
+    <label>Region:</label>
+    <select name="region">
+        {% for r in regions %}
+        <option value="{{ r }}">{{ r }}</option>
+        {% endfor %}
+    </select><br><br>
+    <button type="submit">Predict Price</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{
+  "North West": {
+    "population_density": 533.4777047298401,
+    "population_growth_pct": 1.3507603127100198,
+    "housing_pressure_index": 4.075666760223695,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 199341.0,
+    "net_additions": 26435.0
+  },
+  "East of England": {
+    "population_density": 334.9353312304654,
+    "population_growth_pct": 0.8326133456888707,
+    "housing_pressure_index": 1.9045840475564733,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 173622.0,
+    "net_additions": 27457.0
+  },
+  "North East": {
+    "population_density": 312.85953803762976,
+    "population_growth_pct": 1.3165345777037318,
+    "housing_pressure_index": 4.027486419338848,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.1807602792862655,
+    "gva_total_millions": 57240.0,
+    "net_additions": 8337.0
+  },
+  "South East": {
+    "population_density": 492.50255662495846,
+    "population_growth_pct": 1.0449955566093072,
+    "housing_pressure_index": 2.3250377604672345,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 303748.0,
+    "net_additions": 39135.0
+  },
+  "London": {
+    "population_density": 5643.513212563386,
+    "population_growth_pct": 0.7563969026331163,
+    "housing_pressure_index": 1.902922405160804,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 468464.0,
+    "net_additions": 35263.0
+  },
+  "South West": {
+    "population_density": 242.0325672013558,
+    "population_growth_pct": 0.9843121315525005,
+    "housing_pressure_index": 2.6137116081107794,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 156691.0,
+    "net_additions": 21167.0
+  },
+  "Yorkshire and The Humber": {
+    "population_density": 359.70692809533756,
+    "population_growth_pct": 1.0694661424489604,
+    "housing_pressure_index": 3.8555039969502043,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 137374.0,
+    "net_additions": 12941.0
+  },
+  "West Midlands": {
+    "population_density": 463.15493452456906,
+    "population_growth_pct": 1.0749592107485606,
+    "housing_pressure_index": 2.96342449555209,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 146778.0,
+    "net_additions": 21838.0
+  },
+  "East Midlands": {
+    "population_density": 315.95272473163146,
+    "population_growth_pct": 1.1209123970436385,
+    "housing_pressure_index": 2.2004032786691248,
+    "base_rate_pct": 8.88,
+    "cpi_yoy_pct": 3.024747937671868,
+    "gva_total_millions": 118965.0,
+    "net_additions": 22100.0
+  }
+}

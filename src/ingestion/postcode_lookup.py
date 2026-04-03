@@ -53,7 +53,7 @@ ONSPD_URL = (
 # lat   = latitude
 # long  = longitude
 # ctry  = country code (E=England, W=Wales, S=Scotland, N=NI)
-ONSPD_COLS_NEEDED = ["pcds", "rgn", "oslaua", "lat", "long", "ctry"]
+ONSPD_COLS_NEEDED = ["pcds", "rgn25cd", "lad25cd", "lat", "long", "ctry25cd"]
 
 def download_onspd(overwrite: bool = False) -> Path | None:
     """
@@ -142,22 +142,19 @@ def build_lookup(overwrite: bool = False) -> pd.DataFrame:
         encoding="latin-1",
     ):
         # Filter to England only
-        if "ctry" in chunk.columns:
-            chunk = chunk[chunk["ctry"] == "E92000001"]  # England country code
+        if "ctry25cd" in chunk.columns:
+            chunk = chunk[chunk["ctry25cd"] == "E92000001"]
 
-        # Only keep live postcodes that map to an English region
-        chunk = chunk[chunk["rgn"].isin(ENGLISH_REGIONS.keys())]
+        chunk = chunk[chunk["rgn25cd"].isin(ENGLISH_REGIONS.keys())]
 
-        # Normalise postcode (strip spaces → "SW1A1AA" format for matching)
         chunk["postcode_raw"] = chunk["pcds"].str.upper().str.strip()
         chunk["postcode_nospace"] = chunk["postcode_raw"].str.replace(" ", "", regex=False)
 
-        # Add region name
-        chunk["region_code"] = chunk["rgn"]
-        chunk["region_name"] = chunk["rgn"].map(ENGLISH_REGIONS)
+        chunk["region_code"] = chunk["rgn25cd"]
+        chunk["region_name"] = chunk["rgn25cd"].map(ENGLISH_REGIONS)
 
-        chunk = chunk[["postcode_raw", "postcode_nospace", "region_code", "region_name", "oslaua", "lat", "long"]]
-        chunk = chunk.rename(columns={"oslaua": "laua"})
+        chunk = chunk[["postcode_raw", "postcode_nospace", "region_code", "region_name", "lad25cd", "lat", "long"]]
+        chunk = chunk.rename(columns={"lad25cd": "laua"})
         chunks.append(chunk)
 
     df = pd.concat(chunks, ignore_index=True)

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Prediction Result</title></head>
+<body>
+<h1>Predicted Price: {{ predicted_price }}</h1>
+<h2>{{ property_type }} in {{ region }}</h2>
+<h3>Top Price Drivers (SHAP):</h3>
+<table border="1" cellpadding="8">
+    <tr><th>Feature</th><th>Impact</th></tr>
+    {% for d in drivers %}
+    <tr>
+        <td>{{ d.feature }}</td>
+        <td>{{ "%.4f"|format(d.shap_value) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<a href="/">Make another prediction</a>
+</body>
+</html>

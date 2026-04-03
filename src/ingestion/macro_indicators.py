@@ -330,6 +330,64 @@ def _print_manual(name: str, url: str, dest: Path, notes: str):
     print(f"{'='*60}\n")
 
 
+# ── Mortgage Approvals ────────────────────────────────────────────────────────────────────
+
+def fetch_mortgage_approvals(overwrite=False):
+    """
+    BoE mortgage approvals for house purchase (series AMZJ).
+    Returns: [date, year, month, mortgage_approvals]
+    """
+    out_path = MACRO_PROC_DIR / 'mortgage_approvals.parquet'
+    if out_path.exists() and not overwrite:
+        log.info('Mortgage approvals: already processed.')
+        return pd.read_parquet(out_path)
+
+
+    url = (
+        'https://www.bankofengland.co.uk/boeapps/database/'
+        'fromshowcolumns.asp?Travel=NIxIRxSUx&FromSeries=1'
+        '&ToSeries=50&DAT=RNG&FD=1&FM=Jan&FY=1993'
+        '&TD=31&TM=Dec&TY=2025&VFD=Y&html.x=66&html.y=26'
+        '&C=AMZJ&Filter=N'
+    )
+
+
+    log.info('Fetching mortgage approvals...')
+    try:
+        r = _get(url)
+        lines = r.text.splitlines()
+        data_start = next(
+            (i for i, l in enumerate(lines)
+             if l.strip().startswith('"Date"') or l.strip().startswith('Date')),
+            None
+        )
+        if data_start is None:
+            raise ValueError('Could not locate data header')
+
+
+        csv_text = '\n'.join(lines[data_start:])
+        df = pd.read_csv(io.StringIO(csv_text))
+        df.columns = ['date', 'mortgage_approvals']
+        df['date'] = pd.to_datetime(df['date'], dayfirst=True, errors='coerce')
+        df['mortgage_approvals'] = pd.to_numeric(
+            df['mortgage_approvals'], errors='coerce'
+        )
+        df.dropna(inplace=True)
+        df['year'] = df['date'].dt.year
+        df['month'] = df['date'].dt.month
+        df.sort_values('date', inplace=True)
+
+
+    except Exception as e:
+        log.warning(f'Mortgage approvals fetch failed: {e}')
+        return pd.DataFrame()
+
+
+    df.to_parquet(out_path, compression=PARQUET_COMPRESS, index=False)
+    log.info(f'Mortgage approvals: {len(df):,} rows')
+    return df
+
+
 # ── Run all ───────────────────────────────────────────────────────────────────
 
 def run(overwrite: bool = False):
@@ -339,6 +397,7 @@ def run(overwrite: bool = False):
     fetch_cpi(overwrite)
     fetch_average_earnings(overwrite)
     fetch_housing_supply(overwrite)
+    fetch_mortgage_approvals(overwrite)
     log.info("=== Macro Indicators: Done ===")
 
 

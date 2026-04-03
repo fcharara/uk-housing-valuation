@@ -295,6 +295,72 @@ def fetch_census_2021(overwrite: bool = False) -> pd.DataFrame:
     log.info(f"Census 2021: {len(df)} regions → {out_path}")
     return df
 
+# ── Local Authority Population Density ─────────────────────────────────────────────────────
+
+
+def compute_population_density(pop_df, area_km2_lookup):
+    """
+    Derives population_density = population / area_km2
+    area_km2_lookup: dict mapping laua code to area in km2
+    (from Census 2021 or ONS geography)
+    """
+    pop_df = pop_df.copy()
+    pop_df['area_km2'] = pop_df['laua'].map(area_km2_lookup)
+    pop_df['population_density'] = (
+        pop_df['population'] / pop_df['area_km2']
+    )
+    return pop_df
+
+
+
+
+def fetch_la_median_income(overwrite=False):
+    """
+    NOMIS Annual Survey of Hours and Earnings — median gross annual pay
+    by local authority. Returns: [laua, year, median_household_income]
+    """
+    out_path = DEMO_PROC_DIR / 'la_median_income.parquet'
+    if out_path.exists() and not overwrite:
+        log.info('LA median income: already processed.')
+        return pd.read_parquet(out_path)
+
+
+    # NOMIS dataset NM_30_1 = ASHE Table 7 (residence-based)
+    nomis_base = 'https://www.nomisweb.co.uk/api/v01/dataset'
+    url = (
+        f'{nomis_base}/NM_30_1.data.csv'
+        '?geography=TYPE464'       # local authority districts
+        '&variable=18'             # annual pay - gross - median
+        '&pay=7'                   # annual
+        '&sex=8'                   # total (male + female)
+        '&select=DATE,GEOGRAPHY_CODE,OBS_VALUE'
+    )
+
+
+    log.info('Fetching LA median income from NOMIS...')
+    try:
+        r = _get(url, timeout=180)
+        df = pd.read_csv(io.StringIO(r.text))
+        df.columns = df.columns.str.lower()
+        df.rename(columns={
+            'date': 'year',
+            'geography_code': 'laua',
+            'obs_value': 'median_household_income'
+        }, inplace=True)
+        df['year'] = pd.to_numeric(df['year'], errors='coerce')
+        df['median_household_income'] = pd.to_numeric(
+            df['median_household_income'], errors='coerce'
+        )
+        df.dropna(inplace=True)
+    except Exception as e:
+        log.warning(f'LA income fetch failed: {e}')
+        return pd.DataFrame()
+
+
+    df.to_parquet(out_path, compression=PARQUET_COMPRESS, index=False)
+    log.info(f'LA median income: {len(df):,} rows')
+    return df
+
 
 # ── Run all ───────────────────────────────────────────────────────────────────
 
@@ -303,6 +369,7 @@ def run(overwrite: bool = False):
     fetch_population_estimates(overwrite)
     fetch_migration(overwrite)
     fetch_census_2021(overwrite)
+    fetch_la_median_income(overwrite)
     log.info("=== Demographics: Done ===")
 
 

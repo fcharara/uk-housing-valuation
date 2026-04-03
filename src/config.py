@@ -92,3 +92,31 @@ MHCLG_SUPPLY_URL = "https://assets.publishing.service.gov.uk/media/65f0f5e6da5c3
 CHUNK_SIZE        = 500_000   # rows per chunk when reading large CSVs
 SAMPLE_FRAC       = None      # Set to e.g. 0.1 for 10% sample during dev; None = full data
 PARQUET_COMPRESS  = "snappy"  # Compression for saved parquet files
+
+
+# ── Analysis scope ──────────────────────────────────────────
+ANALYSIS_START_YEAR = 2015   # EPC data availability cutoff
+ANALYSIS_END_YEAR   = 2024
+
+
+# ── EPC Data ────────────────────────────────────────────────
+# EPC data must be downloaded manually from:
+# https://epc.opendatacommunities.org/
+# Register for free, download 'Domestic EPCs' for all of England
+# Save the ZIP files to: data/raw/epc/
+EPC_RAW_DIR = RAW_DIR / 'epc'
+
+
+# ── Additional macro URLs ───────────────────────────────────
+# BoE mortgage approvals (series AMZJ)
+BOE_MORTGAGE_APPROVALS_URL = (
+    'https://www.bankofengland.co.uk/boeapps/database/'
+    'fromshowcolumns.asp?Travel=NIxIRxSUx&FromSeries=1'
+    '&ToSeries=50&DAT=RNG&FD=1&FM=Jan&FY=1993'
+    '&TD=31&TM=Dec&TY=2025&VFD=Y&html.x=66&html.y=26'
+    '&C=AMZJ&Filter=N'
+)
+
+
+# NOMIS API base for local authority level data
+NOMIS_BASE = 'https://www.nomisweb.co.uk/api/v01/dataset'

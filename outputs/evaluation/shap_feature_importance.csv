@@ -1,0 +1,16 @@
+feature,mean_abs_shap
+num__net_additions,0.19130294
+cat__property_type_D,0.15685463
+num__population_density,0.08948915
+cat__duration_label_Freehold,0.048651416
+cat__property_type_T,0.04431305
+num__year,0.041103415
+cat__property_type_F,0.036744945
+num__population_growth_pct,0.03155202
+num__is_new_build,0.026765374
+cat__property_type_S,0.016704587
+num__quarter,0.011890235
+cat__duration_label_Leasehold,0.011059552
+num__housing_pressure_index,0.010531397
+num__cpi_yoy_pct,0.007977537
+num__base_rate_pct,0.00024719845
