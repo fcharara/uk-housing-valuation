@@ -1,16 +1,87 @@
 feature,mean_abs_shap
-num__net_additions,0.19130294
-cat__property_type_D,0.15685463
-num__population_density,0.08948915
-cat__duration_label_Freehold,0.048651416
-cat__property_type_T,0.04431305
-num__year,0.041103415
-cat__property_type_F,0.036744945
-num__population_growth_pct,0.03155202
-num__is_new_build,0.026765374
-cat__property_type_S,0.016704587
-num__quarter,0.011890235
-cat__duration_label_Leasehold,0.011059552
-num__housing_pressure_index,0.010531397
-num__cpi_yoy_pct,0.007977537
-num__base_rate_pct,0.00024719845
+num__floor_area,0.4033127
+num__net_additions,0.20090167
+cat__property_type_D,0.09385038
+num__population_density,0.079955846
+num__num_rooms,0.0756815
+num__year,0.05676961
+cat__property_type_F,0.041434173
+cat__property_type_T,0.026298547
+cat__duration_label_Freehold,0.02567495
+cat__property_type_S,0.02292273
+num__population_growth_pct,0.01804599
+num__quarter,0.0129367355
+num__is_new_build,0.010328799
+num__housing_pressure_index,0.00982556
+cat__energy_rating_nan,0.009362164
+cat__construction_age_band_UNKNOWN,0.008734607
+num__cpi_yoy_pct,0.0062943147
+cat__construction_age_band_NO DATA!,0.0061949496
+cat__construction_age_band_England and Wales: 1900-1929,0.0059442637
+cat__construction_age_band_England and Wales: before 1900,0.0045987526
+cat__duration_label_Leasehold,0.004213545
+cat__construction_age_band_England and Wales: 1930-1949,0.0033887587
+cat__construction_age_band_England and Wales: 1950-1966,0.0033856502
+cat__energy_rating_B,0.003378902
+cat__construction_age_band_England and Wales: 1967-1975,0.0021788753
+cat__energy_rating_E,0.0017488089
+cat__construction_age_band_England and Wales: 1996-2002,0.0013849162
+cat__energy_rating_D,0.0013125255
+cat__energy_rating_F,0.0012144552
+cat__construction_age_band_England and Wales: 1976-1982,0.00096248224
+cat__energy_rating_C,0.00095106906
+cat__energy_rating_G,0.00090940285
+cat__construction_age_band_England and Wales: 2003-2006,0.0005829431
+cat__construction_age_band_England and Wales: 1983-1990,0.0005324872
+cat__construction_age_band_England and Wales: 1991-1995,0.00048962666
+cat__construction_age_band_2021,0.0003341488
+cat__construction_age_band_England and Wales: 2007-2011,0.00028507248
+cat__construction_age_band_England and Wales: 2007 onwards,0.00023454668
+cat__construction_age_band_2023,0.0001334969
+cat__energy_rating_A,9.422579e-05
+cat__construction_age_band_2022,7.6782526e-05
+cat__construction_age_band_2020,7.5223375e-05
+cat__construction_age_band_2019,6.735648e-05
+cat__construction_age_band_INVALID!,5.4820324e-05
+cat__construction_age_band_2024,4.6266006e-05
+cat__construction_age_band_2016,4.1464027e-05
+cat__construction_age_band_2025,1.7563922e-05
+cat__construction_age_band_2017,1.6244736e-05
+cat__construction_age_band_England and Wales: 2012 onwards,9.534672e-06
+cat__construction_age_band_2015,2.1364378e-06
+cat__construction_age_band_2018,9.846875e-07
+num__base_rate_pct,6.023537e-07
+cat__construction_age_band_2013,4.1994042e-07
+cat__construction_age_band_1900,3.630506e-08
+cat__construction_age_band_1920,2.0151221e-08
+cat__construction_age_band_2012,0.0
+cat__construction_age_band_2014,0.0
+cat__construction_age_band_2010,0.0
+cat__construction_age_band_2008,0.0
+cat__construction_age_band_2009,0.0
+cat__construction_age_band_2007,0.0
+cat__construction_age_band_2006,0.0
+cat__construction_age_band_1980,0.0
+cat__construction_age_band_2003,0.0
+cat__construction_age_band_2011,0.0
+cat__construction_age_band_2000,0.0
+cat__construction_age_band_1970,0.0
+cat__construction_age_band_1975,0.0
+cat__construction_age_band_1960,0.0
+cat__construction_age_band_1950,0.0
+cat__construction_age_band_1800,0.0
+cat__construction_age_band_1940,0.0
+cat__construction_age_band_1935,0.0
+cat__construction_age_band_1930,0.0
+cat__construction_age_band_1929,0.0
+cat__construction_age_band_1910,0.0
+cat__construction_age_band_1880,0.0
+cat__construction_age_band_1890,0.0
+cat__construction_age_band_1876,0.0
+cat__construction_age_band_1850,0.0
+cat__construction_age_band_2002,0.0
+cat__construction_age_band_2026,0.0
+cat__construction_age_band_2030,0.0
+cat__construction_age_band_2042,0.0
+cat__construction_age_band_England and Wales: 2022 onwards,0.0
+cat__construction_age_band_England and Wales: 2012-2021,0.0

@@ -78,8 +78,6 @@ CONTINUOUS = [f for f in STRUCTURAL_FEATURES + DEMOGRAPHIC_FEATURES + MACRO_FEAT
 def load_and_prepare():
     df = pd.read_parquet(DATA_PATH)
     df = df[df['year'] >= ANALYSIS_START]
-# Sample for development — remove this line for final run
-    df = df.sample(frac=0.1, random_state=42)
 
 
     # Outlier removal: 1st and 99th percentile (Methodology 2.3)
@@ -164,13 +162,13 @@ def train_all_models(df):
 
         models = {
             'OLS': LinearRegression(),
-            'Lasso': LassoCV(cv=5, random_state=SEED, max_iter=10000),
+            'Lasso': LassoCV(cv=3, random_state=SEED, max_iter=5000),
             'RandomForest': RandomForestRegressor(
-                n_estimators=200, max_depth=20, min_samples_leaf=10,
+                n_estimators=100, max_depth=15, min_samples_leaf=20,
                 random_state=SEED, n_jobs=-1
             ),
             'XGBoost': xgb.XGBRegressor(
-                n_estimators=300, max_depth=8, learning_rate=0.1,
+                n_estimators=200, max_depth=6, learning_rate=0.1,
                 subsample=0.8, colsample_bytree=0.8,
                 random_state=SEED, n_jobs=-1
             ),
@@ -187,39 +185,8 @@ def train_all_models(df):
             ])
 
 
-            # Hyperparameter tuning for tree models
-            if model_name == 'RandomForest':
-                param_dist = {
-                    'model__n_estimators': [100, 200, 300],
-                    'model__max_depth': [10, 15, 20, 25],
-                    'model__min_samples_leaf': [5, 10, 20],
-                }
-                search = RandomizedSearchCV(
-                    pipe, param_dist, n_iter=10, cv=5,
-                    scoring='neg_mean_squared_error',
-                    random_state=SEED, n_jobs=-1
-                )
-                search.fit(X_train, y_train)
-                pipe = search.best_estimator_
-                log.info(f'  Best params: {search.best_params_}')
-            elif model_name == 'XGBoost':
-                param_dist = {
-                    'model__n_estimators': randint(100, 500),
-                    'model__max_depth': randint(4, 12),
-                    'model__learning_rate': uniform(0.01, 0.2),
-                    'model__subsample': uniform(0.6, 0.4),
-                    'model__colsample_bytree': uniform(0.6, 0.4),
-                }
-                search = RandomizedSearchCV(
-                    pipe, param_dist, n_iter=20, cv=5,
-                    scoring='neg_mean_squared_error',
-                    random_state=SEED, n_jobs=-1
-                )
-                search.fit(X_train, y_train)
-                pipe = search.best_estimator_
-                log.info(f'  Best params: {search.best_params_}')
-            else:
-                pipe.fit(X_train, y_train)
+            
+            pipe.fit(X_train, y_train)
 
 
             # Evaluate on test set

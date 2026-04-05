@@ -1,0 +1,44 @@
+INFO:__main__:Prepared dataset: 8,070,049 rows
+INFO:__main__:Training OLS with A_structural...
+INFO:__main__:  MAE: GBP121,649 | RMSE: GBP544,829 | R2: 0.2873
+INFO:__main__:Training Lasso with A_structural...
+INFO:__main__:  MAE: GBP121,714 | RMSE: GBP534,095 | R2: 0.2865
+INFO:__main__:Training RandomForest with A_structural...
+INFO:__main__:  MAE: GBP103,102 | RMSE: GBP158,168 | R2: 0.4593
+INFO:__main__:Training XGBoost with A_structural...
+INFO:__main__:  MAE: GBP103,185 | RMSE: GBP158,500 | R2: 0.4591
+WARNING:__main__:B_structural_demo: missing features {'median_age', 'net_migration_total', 'household_count'}, skipping them
+INFO:__main__:Training OLS with B_structural_demo...
+INFO:__main__:  MAE: GBP102,054 | RMSE: GBP283,202 | R2: 0.4951
+INFO:__main__:Training Lasso with B_structural_demo...
+INFO:__main__:  MAE: GBP102,078 | RMSE: GBP280,162 | R2: 0.4947
+INFO:__main__:Training RandomForest with B_structural_demo...
+INFO:__main__:  MAE: GBP83,717 | RMSE: GBP135,206 | R2: 0.6381
+INFO:__main__:Training XGBoost with B_structural_demo...
+INFO:__main__:  MAE: GBP83,784 | RMSE: GBP135,341 | R2: 0.6390
+WARNING:__main__:C_full_integrated: missing features {'median_age', 'net_migration_total', 'unemployment_rate', 'mortgage_approvals', 'household_count', 'median_household_income'}, skipping them
+INFO:__main__:Training OLS with C_full_integrated...
+INFO:__main__:  MAE: GBP95,196 | RMSE: GBP233,506 | R2: 0.5496
+INFO:__main__:Training Lasso with C_full_integrated...
+INFO:__main__:  MAE: GBP95,207 | RMSE: GBP231,866 | R2: 0.5494
+INFO:__main__:Training RandomForest with C_full_integrated...
+INFO:__main__:  MAE: GBP83,477 | RMSE: GBP135,008 | R2: 0.6404
+INFO:__main__:Training XGBoost with C_full_integrated...
+INFO:__main__:  MAE: GBP83,689 | RMSE: GBP135,253 | R2: 0.6399
+
+Model Comparison:
+       model       feature_set       mae_gbp      rmse_gbp       r2
+         OLS      A_structural 121648.998750 544828.707009 0.287258
+       Lasso      A_structural 121714.273886 534094.514105 0.286481
+RandomForest      A_structural 103102.217317 158168.474442 0.459257
+     XGBoost      A_structural 103184.749174 158500.160036 0.459067
+         OLS B_structural_demo 102054.145181 283202.432412 0.495073
+       Lasso B_structural_demo 102078.270502 280162.232925 0.494714
+RandomForest B_structural_demo  83717.437287 135206.022044 0.638116
+     XGBoost B_structural_demo  83784.427064 135341.340439 0.638962
+         OLS C_full_integrated  95196.140703 233506.302950 0.549639
+       Lasso C_full_integrated  95206.665698 231866.444196 0.549351
+RandomForest C_full_integrated  83476.916007 135008.335050 0.640437
+     XGBoost C_full_integrated  83689.140570 135252.828475 0.639924
+
+All 12 models trained. Artifacts saved to outputs/models
