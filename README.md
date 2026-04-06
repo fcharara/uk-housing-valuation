@@ -1,167 +1,165 @@
-# UK Housing Valuation Model — Data Pipeline
+# UK Housing Valuation Model
 
 Multi-dimensional real estate valuation model integrating property attributes,
-regional demographics, and macroeconomic indicators. England, 1995–2024.
+EPC structural data, regional demographics, and macroeconomic indicators.
+England, 2015–2024.
+
+**Research Question:** Does incorporating demographic and macroeconomic variables
+improve predictive accuracy over traditional structural-only hedonic pricing models?
+
+**Key Finding:** Adding demographic variables improves R² from 0.46 to 0.64
+(+39% relative improvement), while macro variables add marginal further gains.
+
+---
+
+## Results Summary
+
+| Model | A: Structural | B: + Demographic | C: + Macro |
+|-------|:---:|:---:|:---:|
+| OLS | 0.287 | 0.495 | 0.550 |
+| Lasso | 0.286 | 0.495 | 0.549 |
+| Random Forest | 0.459 | 0.638 | 0.640 |
+| XGBoost | 0.459 | 0.639 | 0.640 |
+
+Trained on 8.07M transactions. Best model: XGBoost with full integrated features (R² = 0.64).
 
 ---
 
 ## Project Structure
-
-```
-uk_housing_model/
-├── run_pipeline.py              # Master pipeline runner
+uk-housing-valuation/
+├── run_pipeline.py                    # Master data pipeline
 ├── requirements.txt
 ├── data/
-│   ├── raw/                     # Downloaded source files (not committed to git)
-│   │   ├── land_registry/       # pp-YYYY.csv files
-│   │   ├── postcode/            # ONSPD_latest.csv
-│   │   ├── macro/               # GVA, CPI, BoE rate, AWE xlsx/csv
-│   │   └── demographics/        # MYE, migration, census xlsx
-│   ├── processed/               # Cleaned parquet files per source
-│   └── merged/                  # Final enriched dataset
-│       └── transactions_enriched.parquet
+│   ├── raw/                           # Source files (not in git)
+│   │   ├── land_registry/             # HM Land Registry Price Paid CSVs
+│   │   ├── epc/                       # EPC certificates (~300 LA folders)
+│   │   ├── postcode/                  # ONS Postcode Directory
+│   │   ├── macro/                     # GVA, CPI, BoE rate, AWE, ASHE, unemployment
+│   │   ├── demographics/              # MYE population estimates
+│   │   └── geo/                       # LA boundary GeoJSON
+│   ├── processed/                     # Cleaned parquets per source
+│   └── merged/
+│       └── transactions_enriched.parquet  # Final dataset (27.2M rows, 50 cols)
 ├── src/
-│   ├── config.py                # Paths, URLs, column names
+│   ├── config.py                      # Paths, URLs, parameters
 │   ├── ingestion/
-│   │   ├── land_registry.py     # HM Land Registry Price Paid
-│   │   ├── postcode_lookup.py   # ONS postcode → region mapping
-│   │   ├── macro_indicators.py  # BoE rate, GVA, CPI, AWE, housing supply
-│   │   └── demographics.py      # Population, migration, Census 2021
-│   └── processing/
-│       └── merge_pipeline.py    # Joins all sources + feature engineering
-├── notebooks/
-│   └── 01_eda.ipynb             # Exploratory analysis (to be created)
-└── outputs/                     # Charts, reports, model results
-```
+│   │   ├── land_registry.py           # HM Land Registry download + clean
+│   │   ├── epc_data.py                # EPC certificate processing
+│   │   ├── postcode_lookup.py         # ONSPD postcode → region mapping
+│   │   ├── macro_indicators.py        # BoE rate, GVA, CPI, AWE, housing supply
+│   │   └── demographics.py            # Population, migration, Census 2021
+│   ├── processing/
+│   │   ├── merge_pipeline.py          # Joins all sources + feature engineering
+│   │   └── epc_matching_fast.py       # Vectorised EPC-to-transaction matching
+│   ├── analysis/
+│   │   ├── 01_eda.py                  # Exploratory data analysis
+│   │   ├── 02_model_training.py       # 4 models × 3 feature sets = 12 variants
+│   │   ├── 03_evaluation.py           # Comparison tables, SHAP, PDPs
+│   │   └── 04_housing_pressure.py     # HPI choropleth maps
+│   └── webapp/
+│       ├── app.py                     # Flask web application
+│       ├── templates/                 # HTML templates
+│       └── model_artifacts/           # Saved model config
+└── outputs/
+├── eda/                           # Distribution plots, correlations, VIF
+├── models/                        # Model comparison CSV + joblib artifacts
+├── evaluation/                    # SHAP plots, PDPs, sensitivity analysis
+└── hpi/                           # Choropleth maps, HPI time series
 
 ---
 
 ## Quick Start
 
-### 1. Install dependencies
+### 1. Environment setup
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Run the full pipeline
+### 2. Data pipeline (requires manual EPC download)
 ```bash
-# Full pipeline (downloads ~6–8 GB of data)
+# Download EPC data from https://epc.opendatacommunities.org/
+# Place certificates.csv files in data/raw/epc/
+
+# Run full pipeline
 python run_pipeline.py
+```
 
-# Development mode — 5% sample, much faster
-python run_pipeline.py --sample 0.05
+### 3. EPC matching (postcode + house number, ~8 min)
+```bash
+python src/processing/epc_matching_fast.py
+```
 
-# Only re-run the merge step (if data already downloaded)
-python run_pipeline.py --steps merge
+### 4. Analysis pipeline
+```bash
+python src/analysis/01_eda.py              # EDA plots
+python src/analysis/02_model_training.py   # Train 12 models (~3 hours)
+python src/analysis/03_evaluation.py       # SHAP + evaluation (~15 min)
+python src/analysis/04_housing_pressure.py # HPI maps
+```
+
+### 5. Web application
+```bash
+python src/webapp/app.py                   # Opens at http://127.0.0.1:5000
 ```
 
 ---
 
 ## Data Sources
 
-| Dataset | Source | Size | Licence |
-|---------|--------|------|---------|
-| Price Paid Data | HM Land Registry | ~5 GB | OGL v3 |
-| ONS Postcode Directory | ONS Open Geography | ~1 GB | OGL v3 |
-| Regional GVA per head | ONS | ~5 MB | OGL v3 |
-| CPI (CZMT) | ONS Time Series | ~1 MB | OGL v3 |
-| Average Weekly Earnings | ONS Time Series | ~1 MB | OGL v3 |
-| BoE Base Rate | Bank of England | ~1 MB | OGL v3 |
-| Housing Supply (Table 122) | MHCLG | ~2 MB | OGL v3 |
-| Population Estimates (MYE) | ONS | ~5 MB | OGL v3 |
-| Net Migration | ONS | ~2 MB | OGL v3 |
-| Census 2021 (NOMIS API) | ONS / NOMIS | API | OGL v3 |
+| Dataset | Source | Variables | Granularity |
+|---------|--------|-----------|-------------|
+| Price Paid Data | HM Land Registry | Price, type, tenure, postcode | Transaction-level |
+| EPC Register | DLUHC | Floor area, rooms, energy rating, age band | Property-level |
+| ONSPD | ONS Geography | Postcode → region/LA mapping | Postcode-level |
+| Base Rate | Bank of England | Bank rate (%) | Monthly |
+| CPI | ONS (D7BT) | Consumer price index, YoY % | Monthly |
+| Avg Weekly Earnings | ONS (KAB9) | Earnings (£) | Monthly |
+| Regional GVA | ONS | Gross value added (£M) | Region × Year |
+| Housing Supply | MHCLG Live Table 122 | Net additional dwellings | LA × Year |
+| Population Estimates | ONS MYE | Population, density, median age | Region × Year |
+| Migration | ONS MYE3 | Net internal migration | Region (cross-section) |
+| Unemployment | ONS Model-based | Unemployment rate (%) | LA (cross-section) |
+| Median Income | ONS ASHE Table 8.7a | Gross annual pay (£) | Region (cross-section) |
+| Census 2021 | ONS/NOMIS | Tenure structure (%) | Region (cross-section) |
 
-All data is Open Government Licence (OGL v3) — free to use and redistribute with attribution.
-
----
-
-## Manual Downloads (if automated fetch fails)
-
-Some ONS files require manual download due to URL instability. The pipeline
-will print clear instructions if any automated download fails.
-
-### ONSPD (Postcode Directory) — most likely to need manual download
-1. Go to: https://geoportal.statistics.gov.uk
-2. Search: "ONS Postcode Directory"
-3. Download latest CSV edition (~1 GB zip)
-4. Extract main Data CSV and save to: `data/raw/postcode/ONSPD_latest.csv`
-
-### ONS Regional GVA
-1. Go to: https://www.ons.gov.uk/economy/grossdomesticproductgdp/datasets/regionalgrossvalueaddedbalancedbyindustry
-2. Download the current edition XLSX
-3. Save to: `data/raw/macro/regional_gva.xlsx`
-
-### MHCLG Live Table 122
-1. Go to: https://www.gov.uk/government/statistical-data-sets/live-tables-on-net-supply-of-housing
-2. Download "Live Table 122"
-3. Save to: `data/raw/macro/mhclg_live_table_122.xlsx`
+All data is Open Government Licence (OGL v3).
 
 ---
 
-## Final Dataset Schema
+## Methodology
 
-After `run_pipeline.py`, `data/merged/transactions_enriched.parquet` contains:
+The project follows a six-stage methodology aligned with the capstone thesis:
 
-### Property-level (from Land Registry + Postcode lookup)
-| Column | Description |
-|--------|-------------|
-| `price` | Sale price (£) |
-| `log_price` | Natural log of price (model target) |
-| `date_of_transfer` | Transaction date |
-| `year`, `month`, `quarter` | Temporal fields |
-| `property_type` | D/S/T/F/O |
-| `property_type_label` | Detached / Semi-Detached / etc. |
-| `is_new_build` | 1 = new build, 0 = established |
-| `duration_label` | Freehold / Leasehold |
-| `postcode` | Full postcode |
-| `region_name` | English region |
-| `laua` | Local Authority code |
-| `lat`, `long` | Coordinates |
-
-### Macroeconomic (monthly, joined on year+month)
-| Column | Description |
-|--------|-------------|
-| `base_rate_pct` | BoE Bank Rate (%) |
-| `cpi_index` | CPI all items index (2015=100) |
-| `cpi_yoy_pct` | CPI year-on-year % change |
-| `avg_weekly_earnings_gbp` | UK average weekly earnings (£) |
-
-### Regional economic (annual, joined on region+year)
-| Column | Description |
-|--------|-------------|
-| `gva_per_head_gbp` | Regional GVA per head (£) |
-| `net_additions` | New dwellings (MHCLG) |
-
-### Demographic (annual, joined on region+year)
-| Column | Description |
-|--------|-------------|
-| `population` | Regional mid-year population |
-| `population_growth_pct` | YoY population growth (%) |
-| `net_migration_total` | Net migration into region |
-
-### Census 2021 (cross-sectional, joined on region)
-| Column | Description |
-|--------|-------------|
-| `owner_occupier_pct` | % households owner-occupied |
-| `private_rental_pct` | % households private rented |
-| `census_population_2021` | 2021 Census population |
-
-### Derived / Engineered
-| Column | Description |
-|--------|-------------|
-| `price_to_annual_income` | Price / annual earnings proxy |
-| `housing_pressure_index` | Population growth / new supply |
-| `decade` | Decade of transaction |
-| `season` | Spring / Summer / Autumn / Winter |
+1. **Data Collection** — 13 public datasets merged into a single analytical file
+2. **Pre-processing** — EPC fuzzy/exact matching, outlier removal (1st/99th percentile), median imputation, log transformation of prices
+3. **EDA** — Distribution plots, correlation matrix, VIF multicollinearity check
+4. **Model Training** — OLS, Lasso, Random Forest, XGBoost across three feature sets (structural only, + demographic, + macro)
+5. **Evaluation** — MAE/RMSE/R² comparison, SHAP analysis (beeswarm, force plots, PDPs), outlier sensitivity check
+6. **Deployment** — Flask web app with SHAP-driven price explanations
 
 ---
 
-## Next Steps (after pipeline runs)
+## Feature Sets (Methodology Table 2)
 
-1. **EDA**: `notebooks/01_eda.ipynb` — price distributions by region/type/time
-2. **Baseline model**: Linear regression / Lasso — property features only
-3. **Extended model**: Add macro + demographic variables; compare RMSE/MAE
-4. **ML models**: Random Forest, XGBoost
-5. **SHAP analysis**: Feature importance by variable group
-6. **Web app**: Flask app for interactive predictions
+| Set | Features |
+|-----|----------|
+| **A: Structural** | property_type, tenure, floor_area, num_rooms, energy_rating, construction_age_band, is_new_build, year, quarter |
+| **B: + Demographic** | All A + population_density, population_growth_pct, median_age, net_migration_total, housing_pressure_index |
+| **C: + Macro** | All B + base_rate_pct, cpi_yoy_pct, median_household_income, unemployment_rate, net_additions, gva_total_millions |
+
+---
+
+## Technical Stack
+
+- **Python 3.11** — pandas, numpy, scikit-learn, XGBoost, SHAP
+- **Visualisation** — matplotlib, seaborn, folium
+- **Web** — Flask
+- **Data formats** — Parquet (compressed), CSV, XLSX, ODS
+
+---
+
+## Author
+
+Bachelor's capstone project, 2024–2025.
