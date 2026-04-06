@@ -1,7 +1,15 @@
 """
 Housing Pressure Index Analysis — Methodology Section 6
-"""
 
+Computes HPI = Population Change / Net Additional Dwellings
+for each local authority district per year.
+
+Outputs:
+  - outputs/hpi/hpi_choropleth.html  — Interactive map of HPI by LA
+  - outputs/hpi/price_choropleth.html — Interactive map of median prices by LA
+  - outputs/hpi/hpi_time_series.png  — Time series for selected LAs
+  - outputs/hpi/hpi_summary_table.csv — HPI statistics by LA
+"""
 
 import pandas as pd
 import numpy as np
