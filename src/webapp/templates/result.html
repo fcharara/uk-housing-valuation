@@ -1,20 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head><title>Prediction Result</title></head>
+<head>
+    <title>Prediction Result</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
+        .container { max-width: 600px; margin: 60px auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .price { font-size: 42px; font-weight: 700; color: #2b6cb0; margin-bottom: 8px; }
+        .details { color: #666; margin-bottom: 30px; font-size: 16px; }
+        h3 { color: #1a365d; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        th { background: #1a365d; color: white; padding: 10px 14px; text-align: left; font-size: 14px; }
+        td { padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:hover { background: #f7fafc; }
+        .positive { color: #38a169; font-weight: 600; }
+        .negative { color: #e53e3e; font-weight: 600; }
+        .back { display: inline-block; padding: 12px 24px; background: #2b6cb0; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
+        .back:hover { background: #1a365d; }
+        .footer { text-align: center; margin-top: 20px; }
+    </style>
+</head>
 <body>
-<h1>Predicted Price: {{ predicted_price }}</h1>
-<h2>{{ property_type }} in {{ region }}</h2>
-<h3>Top Price Drivers (SHAP):</h3>
-<table border="1" cellpadding="8">
-    <tr><th>Feature</th><th>Impact</th></tr>
-    {% for d in drivers %}
-    <tr>
-        <td>{{ d.feature }}</td>
-        <td>{{ "%.4f"|format(d.shap_value) }}</td>
-    </tr>
-    {% endfor %}
-</table>
-<br>
-<a href="/">Make another prediction</a>
+<div class="container">
+    <div class="price">{{ predicted_price }}</div>
+    <div class="details">{{ property_type_label }} · {{ region }}</div>
+    <h3>Top Price Drivers</h3>
+    <table>
+        <tr><th>Feature</th><th>Impact on Price</th></tr>
+        {% for d in drivers %}
+        <tr>
+            <td>{{ d.feature_label }}</td>
+            <td class="{{ 'positive' if d.shap_value > 0 else 'negative' }}">
+                {{ "+" if d.shap_value > 0 else "" }}{{ "%.3f"|format(d.shap_value) }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="footer">
+        <a href="/" class="back">Make Another Prediction</a>
+    </div>
+</div>
 </body>
 </html>

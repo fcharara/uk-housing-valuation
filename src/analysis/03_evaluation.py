@@ -158,6 +158,51 @@ def shap_analysis():
     plt.savefig(OUT_DIR / 'shap_feature_importance.png', dpi=150)
     plt.close()
 
+    # ── SHAP grouped by variable category ──
+    structural = ['property_type', 'duration_label', 'floor_area', 'num_rooms',
+                  'energy_rating', 'construction_age_band', 'is_new_build', 'year', 'quarter']
+    demographic = ['population_density', 'population_growth_pct', 'median_age',
+                   'net_migration_total', 'housing_pressure_index']
+    macro = ['base_rate_pct', 'cpi_yoy_pct', 'median_household_income',
+             'unemployment_rate', 'net_additions', 'gva_total_millions']
+
+    category_shap = {'Structural': 0, 'Demographic': 0, 'Macro': 0}
+    for i, fname in enumerate(feature_names):
+        base = fname.split('__')[-1] if '__' in fname else fname
+        base = base.split('_x0_')[0] if '_x0_' in base else base
+        if any(s in base for s in structural):
+            category_shap['Structural'] += mean_abs_shap[i]
+        elif any(s in base for s in demographic):
+            category_shap['Demographic'] += mean_abs_shap[i]
+        elif any(s in base for s in macro):
+            category_shap['Macro'] += mean_abs_shap[i]
+
+    plt.figure(figsize=(8, 5))
+    cats = list(category_shap.keys())
+    vals = list(category_shap.values())
+    colors = ['#2196F3', '#4CAF50', '#FF9800']
+    plt.bar(cats, vals, color=colors)
+    plt.ylabel('Sum of Mean |SHAP values|')
+    plt.title('SHAP Importance by Variable Category')
+    plt.tight_layout()
+    plt.savefig(OUT_DIR / 'shap_by_category.png', dpi=150)
+    plt.close()
+    print(f'  Category SHAP: {category_shap}')
+
+    # ── SHAP force plots for 5 representative predictions ──
+    shap.initjs()
+    base_value = explainer.expected_value
+    if isinstance(base_value, np.ndarray):
+        base_value = base_value[0]
+
+    indices = [0, sample_size//4, sample_size//2, 3*sample_size//4, sample_size-1]
+    for j, idx in enumerate(indices):
+        force = shap.force_plot(base_value, shap_values[idx], 
+                                X_shap[idx], feature_names=feature_names,
+                                matplotlib=True, show=False)
+        plt.savefig(OUT_DIR / f'shap_force_plot_{j+1}.png', dpi=150, bbox_inches='tight')
+        plt.close()
+    print(f'  Force plots saved for {len(indices)} predictions')
 
     # Partial Dependence Plots
     for feature in ['floor_area', 'base_rate_pct', 'population_density']:
