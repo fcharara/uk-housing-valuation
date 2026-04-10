@@ -1,44 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Prediction Result</title>
+    <title>Valuation Result</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
-        .container { max-width: 600px; margin: 60px auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        .price { font-size: 42px; font-weight: 700; color: #2b6cb0; margin-bottom: 8px; }
-        .details { color: #666; margin-bottom: 30px; font-size: 16px; }
-        h3 { color: #1a365d; margin-bottom: 16px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-        th { background: #1a365d; color: white; padding: 10px 14px; text-align: left; font-size: 14px; }
-        td { padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 14px; }
-        tr:hover { background: #f7fafc; }
-        .positive { color: #38a169; font-weight: 600; }
-        .negative { color: #e53e3e; font-weight: 600; }
-        .back { display: inline-block; padding: 12px 24px; background: #2b6cb0; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
-        .back:hover { background: #1a365d; }
-        .footer { text-align: center; margin-top: 20px; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f7fa; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { max-width: 560px; width: 100%; margin: 40px 20px; }
+        .card { background: white; border-radius: 16px; padding: 44px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 30px rgba(0,0,0,0.05); }
+        .price-section { text-align: center; margin-bottom: 32px; }
+        .price-label { font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .price { font-size: 48px; font-weight: 700; color: #1e3a5f; letter-spacing: -1px; }
+        .details { display: inline-flex; align-items: center; gap: 8px; background: #f0f4ff; padding: 8px 16px; border-radius: 20px; font-size: 14px; color: #3b82f6; font-weight: 500; margin-top: 12px; }
+        .divider { height: 1px; background: #f0f0f0; margin: 28px 0; }
+        h3 { font-size: 14px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+        .driver-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5; }
+        .driver-row:last-child { border-bottom: none; }
+        .driver-name { font-size: 14px; color: #374151; font-weight: 500; }
+        .driver-value { font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
+        .positive { color: #059669; background: #ecfdf5; }
+        .negative { color: #dc2626; background: #fef2f2; }
+        .bar-container { flex: 1; margin: 0 16px; height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+        .bar { height: 100%; border-radius: 3px; }
+        .bar-pos { background: linear-gradient(90deg, #34d399, #059669); }
+        .bar-neg { background: linear-gradient(90deg, #dc2626, #f87171); float: right; }
+        .back-link { display: block; text-align: center; margin-top: 24px; }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: linear-gradient(135deg, #1e3a5f, #2563eb); color: white; text-decoration: none; border-radius: 10px; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+        .back-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .footer { text-align: center; margin-top: 16px; font-size: 12px; color: #9ca3af; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="price">{{ predicted_price }}</div>
-    <div class="details">{{ property_type_label }} · {{ region }}</div>
-    <h3>Top Price Drivers</h3>
-    <table>
-        <tr><th>Feature</th><th>Impact on Price</th></tr>
+    <div class="card">
+        <div class="price-section">
+            <div class="price-label">Estimated Property Value</div>
+            <div class="price">{{ predicted_price }}</div>
+            <div class="details">{{ property_type_label }} · {{ region }}</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3>Key Price Drivers</h3>
+        {% set max_shap = drivers[0].shap_value|abs if drivers else 1 %}
         {% for d in drivers %}
-        <tr>
-            <td>{{ d.feature_label }}</td>
-            <td class="{{ 'positive' if d.shap_value > 0 else 'negative' }}">
+        <div class="driver-row">
+            <span class="driver-name">{{ d.feature_label }}</span>
+            <div class="bar-container">
+                <div class="bar {{ 'bar-pos' if d.shap_value > 0 else 'bar-neg' }}" style="width: {{ (d.shap_value|abs / max_shap * 100)|round }}%"></div>
+            </div>
+            <span class="driver-value {{ 'positive' if d.shap_value > 0 else 'negative' }}">
                 {{ "+" if d.shap_value > 0 else "" }}{{ "%.3f"|format(d.shap_value) }}
-            </td>
-        </tr>
+            </span>
+        </div>
         {% endfor %}
-    </table>
-    <div class="footer">
-        <a href="/" class="back">Make Another Prediction</a>
+
+        <div class="divider"></div>
+
+        <div class="back-link">
+            <a href="/" class="back-btn">← New Valuation</a>
+        </div>
     </div>
+    <p class="footer">Powered by XGBoost + SHAP · Fares Charara Capstone Project - IE University 2026</p>
 </div>
 </body>
 </html>

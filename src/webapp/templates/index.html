@@ -1,70 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>UK Housing Valuation Model</title>
+    <title>UK Housing Price Predictor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
-        .container { max-width: 600px; margin: 60px auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        h1 { color: #1a365d; margin-bottom: 8px; font-size: 28px; }
-        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; color: #1a365d; }
-        select, input[type="number"] { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; margin-bottom: 20px; }
-        select:focus, input:focus { outline: none; border-color: #2b6cb0; box-shadow: 0 0 0 3px rgba(43,108,176,0.1); }
-        button { width: 100%; padding: 14px; background: #2b6cb0; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        button:hover { background: #1a365d; }
-        .row { display: flex; gap: 16px; }
-        .row > div { flex: 1; }
-        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #999; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f7fa; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { max-width: 560px; width: 100%; margin: 40px 20px; }
+        .card { background: white; border-radius: 16px; padding: 44px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 30px rgba(0,0,0,0.05); }
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #1e3a5f, #3b82f6); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; }
+        h1 { font-size: 24px; font-weight: 700; color: #1a1a2e; }
+        .subtitle { color: #6b7280; font-size: 14px; margin-bottom: 32px; line-height: 1.5; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input[type="number"] { width: 100%; padding: 12px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 15px; font-family: 'Inter', sans-serif; background: #fafbfc; transition: all 0.2s; appearance: none; -webkit-appearance: none; }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+        select:focus, input:focus { outline: none; border-color: #3b82f6; background: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .field { margin-bottom: 20px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #1e3a5f, #2563eb); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+        button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        button:active { transform: translateY(0); }
+        .footer { text-align: center; margin-top: 16px; font-size: 12px; color: #9ca3af; }
+        .footer a { color: #6b7280; text-decoration: none; }
+        .divider { height: 1px; background: #f0f0f0; margin: 24px 0; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>UK Housing Price Predictor</h1>
-    <p class="subtitle">Multi-dimensional valuation model — England, 2015–2024</p>
-    <form action="/predict" method="post">
-        <div class="row">
-            <div>
-                <label>Property Type</label>
-                <select name="property_type">
-                    <option value="D">Detached</option>
-                    <option value="S">Semi-Detached</option>
-                    <option value="T">Terraced</option>
-                    <option value="F">Flat / Maisonette</option>
+    <div class="card">
+        <div class="logo">
+            <div class="logo-icon">🏠</div>
+            <h1>UK Housing Valuation</h1>
+        </div>
+        <p class="subtitle">Predict residential property prices in England using an integrated machine learning model with SHAP-driven explanations.</p>
+
+        <form action="/predict" method="post">
+            <div class="row">
+                <div class="field">
+                    <label>Property Type</label>
+                    <select name="property_type">
+                        <option value="D">Detached</option>
+                        <option value="S" selected>Semi-Detached</option>
+                        <option value="T">Terraced</option>
+                        <option value="F">Flat</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Energy Rating</label>
+                    <select name="energy_rating">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C" selected>C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label>Floor Area (m²)</label>
+                    <input type="number" name="floor_area" value="95" min="10" max="500">
+                </div>
+                <div class="field">
+                    <label>Number of Rooms</label>
+                    <input type="number" name="num_rooms" value="4" min="1" max="20">
+                </div>
+            </div>
+            <div class="field">
+                <label>Region</label>
+                <select name="region">
+                    {% for r in regions %}
+                    <option value="{{ r }}" {% if r == 'South East' %}selected{% endif %}>{{ r }}</option>
+                    {% endfor %}
                 </select>
             </div>
-            <div>
-                <label>Energy Rating</label>
-                <select name="energy_rating">
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C" selected>C</option>
-                    <option value="D">D</option>
-                    <option value="E">E</option>
-                    <option value="F">F</option>
-                    <option value="G">G</option>
-                </select>
-            </div>
-        </div>
-        <div class="row">
-            <div>
-                <label>Floor Area (m²)</label>
-                <input type="number" name="floor_area" value="85" min="10" max="500">
-            </div>
-            <div>
-                <label>Number of Rooms</label>
-                <input type="number" name="num_rooms" value="4" min="1" max="20">
-            </div>
-        </div>
-        <label>Region</label>
-        <select name="region">
-            {% for r in regions %}
-            <option value="{{ r }}">{{ r }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Predict Price</button>
-    </form>
-    <p class="footer">XGBoost model with SHAP explanations · Capstone Project 2025</p>
+            <button type="submit">Get Valuation</button>
+        </form>
+    </div>
+    <p class="footer">XGBoost model · 8M transactions · SHAP interpretability<br>Fares Charara Capstone Project — IE University 2026</p>
 </div>
 </body>
 </html>
