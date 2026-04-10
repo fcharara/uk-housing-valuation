@@ -7,27 +7,29 @@ England, 2015–2024.
 **Research Question:** Does incorporating demographic and macroeconomic variables
 improve predictive accuracy over traditional structural-only hedonic pricing models?
 
-**Key Finding:** Adding demographic variables improves R² from 0.46 to 0.64
-(+39% relative improvement), while macro variables add marginal further gains.
-
+**Key Finding:** Adding demographic variables improves R² from 0.46 to 0.64,
+and adding macroeconomic variables pushes it further to 0.725.
 ---
 
 ## Results Summary
 
 | Model | A: Structural | B: + Demographic | C: + Macro |
 |-------|:---:|:---:|:---:|
-| OLS | 0.287 | 0.495 | 0.550 |
-| Lasso | 0.286 | 0.495 | 0.549 |
-| Random Forest | 0.459 | 0.638 | 0.640 |
-| XGBoost | 0.459 | 0.639 | 0.640 |
+| OLS | 0.287 | 0.531 | 0.610 |
+| Lasso | 0.286 | 0.531 | 0.610 |
+| Random Forest | 0.459 | 0.639 | 0.716 |
+| XGBoost | 0.459 | 0.640 | 0.725 |
 
-Trained on 8.07M transactions. Best model: XGBoost with full integrated features (R² = 0.64).
+Trained on 8.07M transactions. Best model: XGBoost with full integrated features (R² = 0.725).
 
 ---
 
 ## Project Structure
+
+```
 uk-housing-valuation/
 ├── run_pipeline.py                    # Master data pipeline
+├── run_all.sh                         # Full reproducibility script
 ├── requirements.txt
 ├── data/
 │   ├── raw/                           # Source files (not in git)
@@ -39,13 +41,13 @@ uk-housing-valuation/
 │   │   └── geo/                       # LA boundary GeoJSON
 │   ├── processed/                     # Cleaned parquets per source
 │   └── merged/
-│       └── transactions_enriched.parquet  # Final dataset (27.2M rows, 50 cols)
+│       └── transactions_enriched.parquet  # Final dataset (27.2M rows, 51 cols)
 ├── src/
 │   ├── config.py                      # Paths, URLs, parameters
 │   ├── ingestion/
 │   │   ├── land_registry.py           # HM Land Registry download + clean
 │   │   ├── epc_data.py                # EPC certificate processing
-│   │   ├── postcode_lookup.py         # ONSPD postcode → region mapping
+│   │   ├── postcode_lookup.py         # ONSPD postcode -> region mapping
 │   │   ├── macro_indicators.py        # BoE rate, GVA, CPI, AWE, housing supply
 │   │   └── demographics.py            # Population, migration, Census 2021
 │   ├── processing/
@@ -53,7 +55,7 @@ uk-housing-valuation/
 │   │   └── epc_matching_fast.py       # Vectorised EPC-to-transaction matching
 │   ├── analysis/
 │   │   ├── 01_eda.py                  # Exploratory data analysis
-│   │   ├── 02_model_training.py       # 4 models × 3 feature sets = 12 variants
+│   │   ├── 02_model_training.py       # 4 models x 3 feature sets = 12 variants
 │   │   ├── 03_evaluation.py           # Comparison tables, SHAP, PDPs
 │   │   └── 04_housing_pressure.py     # HPI choropleth maps
 │   └── webapp/
@@ -61,11 +63,11 @@ uk-housing-valuation/
 │       ├── templates/                 # HTML templates
 │       └── model_artifacts/           # Saved model config
 └── outputs/
-├── eda/                           # Distribution plots, correlations, VIF
-├── models/                        # Model comparison CSV + joblib artifacts
-├── evaluation/                    # SHAP plots, PDPs, sensitivity analysis
-└── hpi/                           # Choropleth maps, HPI time series
-
+    ├── eda/                           # Distribution plots, correlations, VIF
+    ├── models/                        # Model comparison CSV + joblib artifacts
+    ├── evaluation/                    # SHAP plots, PDPs, sensitivity analysis
+    └── hpi/                           # Choropleth maps, HPI time series
+```
 ---
 
 ## Quick Start
@@ -162,4 +164,4 @@ The project follows a six-stage methodology aligned with the capstone thesis:
 
 ## Author
 
-Bachelor's capstone project, 2024–2025.
+Fares Charara, 2026.
